@@ -1,0 +1,18 @@
+[Unit]
+Description=ChatWeight QQ 12-hour proactive check
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=chatweight
+Group=chatweight
+WorkingDirectory=/srv/chatweight/chat-weight-v1/windows_agent
+EnvironmentFile=/etc/chatweight/qq.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+StateDirectory=chatweight
+ExecStart=/usr/bin/python3 -m chatweight.qq_proactive --db /var/lib/chatweight/chatweight.db --suggestions /var/lib/chatweight/qq_proactive_suggestions.json --send
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true

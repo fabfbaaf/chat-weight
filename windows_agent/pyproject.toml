@@ -1,0 +1,23 @@
+[project]
+name = "chatweight"
+version = "0.2.0"
+description = "Local-first chat interaction and relationship progression engine"
+authors = [{name = "桔梗"}]
+license = "MIT"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+wechat-windows = [
+  "numpy>=1.26",
+  "rapidocr-onnxruntime>=1.4,<2; python_version < '3.13'",
+  "windows-capture; sys_platform == 'win32'",
+]
+
+[project.scripts]
+chatweight-wechat = "chatweight.wechat_live:main"
+chatweight-qq-bot = "chatweight.qq_bot:main"
+chatweight-qq-proactive = "chatweight.qq_proactive:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["chatweight*"]

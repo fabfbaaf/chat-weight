@@ -1,0 +1,11 @@
+[Unit]
+Description=Check allowlisted QQ friends for 12-hour silence every 15 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+Unit=chatweight-qq-proactive.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

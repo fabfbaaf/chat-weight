@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SemanticRelationshipEvents",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["events"],
+  "properties": {
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "present", "confidence", "actor", "evidence"],
+        "properties": {
+          "type": {
+            "enum": [
+              "PERSONAL_TOPIC", "PERSONAL_QUESTION", "SELF_DISCLOSURE",
+              "TARGETED_SHARING", "CHECK_IN", "REMEMBER_AND_FOLLOW_UP",
+              "EMOTIONAL_SUPPORT", "PRACTICAL_SUPPORT", "SAFETY_CONCERN",
+              "SPECIAL_COMPLIMENT", "LIGHT_FLIRT", "LIGHT_MISSING_EXPRESSION",
+              "CARE_EXPRESSION", "DEPENDENCY_EXPRESSION", "SPECIAL_IMPORTANCE_EXPRESSION"
+            ]
+          },
+          "present": {"type": "boolean"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "actor": {"enum": ["SELF", "OTHER"]},
+          "evidence": {"type": "string"}
+        }
+      }
+    }
+  }
+}

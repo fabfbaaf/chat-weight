@@ -1,0 +1,23 @@
+[Unit]
+Description=ChatWeight personal QQ assistant
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=chatweight
+Group=chatweight
+WorkingDirectory=/srv/chatweight/chat-weight-v1/windows_agent
+EnvironmentFile=/etc/chatweight/qq.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+StateDirectory=chatweight
+ExecStart=/usr/bin/python3 -m chatweight.qq_bot --db /var/lib/chatweight/chatweight.db --suggestions /var/lib/chatweight/qq_suggestions.json
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

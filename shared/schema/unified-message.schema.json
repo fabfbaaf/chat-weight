@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UnifiedMessage",
+  "type": "object",
+  "required": ["id", "platform", "conversationId", "direction", "type", "messageTime", "capturedAt", "fingerprint"],
+  "properties": {
+    "id": {"type": "string"},
+    "platform": {"enum": ["wechat", "qq"]},
+    "conversationId": {"type": "string"},
+    "personId": {"type": ["string", "null"]},
+    "direction": {"enum": ["incoming", "outgoing", "system"]},
+    "type": {"enum": ["text", "image", "sticker", "voice", "video", "file", "link", "system", "unknown"]},
+    "text": {"type": ["string", "null"]},
+    "messageTime": {"type": "integer"},
+    "capturedAt": {"type": "integer"},
+    "fingerprint": {"type": "string"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+  }
+}

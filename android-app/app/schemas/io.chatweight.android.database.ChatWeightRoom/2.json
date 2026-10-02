@@ -1,0 +1,1681 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e13f1b31fe898e531df3e1ee74b52d9d",
+    "entities": [
+      {
+        "tableName": "persons",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `display_name` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "display_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "platform_identities",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `person_id` TEXT NOT NULL, `platform` TEXT NOT NULL, `platform_user_id` TEXT, `display_name` TEXT, `alias` TEXT, `created_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platform",
+            "columnName": "platform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platformUserId",
+            "columnName": "platform_user_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "display_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "alias",
+            "columnName": "alias",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_identity_person",
+            "unique": false,
+            "columnNames": [
+              "person_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_identity_person` ON `${TABLE_NAME}` (`person_id`)"
+          },
+          {
+            "name": "idx_identity_platform_user",
+            "unique": false,
+            "columnNames": [
+              "platform",
+              "platform_user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_identity_platform_user` ON `${TABLE_NAME}` (`platform`, `platform_user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "conversations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `platform` TEXT NOT NULL, `platform_conversation_id` TEXT, `title` TEXT, `conversation_type` TEXT NOT NULL, `primary_person_id` TEXT, `first_seen_at` INTEGER NOT NULL, `last_seen_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`primary_person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platform",
+            "columnName": "platform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platformConversationId",
+            "columnName": "platform_conversation_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "conversationType",
+            "columnName": "conversation_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primaryPersonId",
+            "columnName": "primary_person_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstSeenAt",
+            "columnName": "first_seen_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastSeenAt",
+            "columnName": "last_seen_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_conversations_primary_person_room",
+            "unique": false,
+            "columnNames": [
+              "primary_person_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_conversations_primary_person_room` ON `${TABLE_NAME}` (`primary_person_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "primary_person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "messages",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `platform` TEXT NOT NULL, `account_id` TEXT, `conversation_id` TEXT NOT NULL, `person_id` TEXT, `sender_id` TEXT, `sender_name` TEXT, `direction` TEXT NOT NULL, `message_type` TEXT NOT NULL, `text` TEXT, `message_time` INTEGER NOT NULL, `captured_at` INTEGER NOT NULL, `voice_duration_ms` INTEGER, `reply_to_message_id` TEXT, `fingerprint` TEXT NOT NULL, `capture_source` TEXT NOT NULL, `confidence` REAL NOT NULL, `raw_json` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "platform",
+            "columnName": "platform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accountId",
+            "columnName": "account_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderId",
+            "columnName": "sender_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderName",
+            "columnName": "sender_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "messageType",
+            "columnName": "message_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "messageTime",
+            "columnName": "message_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capturedAt",
+            "columnName": "captured_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voiceDurationMs",
+            "columnName": "voice_duration_ms",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "replyToMessageId",
+            "columnName": "reply_to_message_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fingerprint",
+            "columnName": "fingerprint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "captureSource",
+            "columnName": "capture_source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confidence",
+            "columnName": "confidence",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawJson",
+            "columnName": "raw_json",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_messages_conversation_time",
+            "unique": false,
+            "columnNames": [
+              "conversation_id",
+              "message_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_messages_conversation_time` ON `${TABLE_NAME}` (`conversation_id`, `message_time`)"
+          },
+          {
+            "name": "idx_messages_person_time",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "message_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_messages_person_time` ON `${TABLE_NAME}` (`person_id`, `message_time`)"
+          },
+          {
+            "name": "idx_messages_direction_time",
+            "unique": false,
+            "columnNames": [
+              "conversation_id",
+              "direction",
+              "message_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_messages_direction_time` ON `${TABLE_NAME}` (`conversation_id`, `direction`, `message_time`)"
+          },
+          {
+            "name": "idx_messages_fingerprint",
+            "unique": true,
+            "columnNames": [
+              "platform",
+              "conversation_id",
+              "fingerprint"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `idx_messages_fingerprint` ON `${TABLE_NAME}` (`platform`, `conversation_id`, `fingerprint`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "conversations",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "conversation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "persons",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "chat_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `conversation_id` TEXT NOT NULL, `primary_person_id` TEXT, `started_at` INTEGER NOT NULL, `ended_at` INTEGER, `initiator_side` TEXT NOT NULL, `message_count` INTEGER NOT NULL, `incoming_count` INTEGER NOT NULL, `outgoing_count` INTEGER NOT NULL, `turn_count` INTEGER NOT NULL, `duration_ms` INTEGER NOT NULL, `last_message_at` INTEGER NOT NULL, `close_reason` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "primaryPersonId",
+            "columnName": "primary_person_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endedAt",
+            "columnName": "ended_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "initiatorSide",
+            "columnName": "initiator_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "messageCount",
+            "columnName": "message_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incomingCount",
+            "columnName": "incoming_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outgoingCount",
+            "columnName": "outgoing_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "turnCount",
+            "columnName": "turn_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMs",
+            "columnName": "duration_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastMessageAt",
+            "columnName": "last_message_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "closeReason",
+            "columnName": "close_reason",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_sessions_conversation_start",
+            "unique": false,
+            "columnNames": [
+              "conversation_id",
+              "started_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_sessions_conversation_start` ON `${TABLE_NAME}` (`conversation_id`, `started_at`)"
+          },
+          {
+            "name": "idx_sessions_person_start",
+            "unique": false,
+            "columnNames": [
+              "primary_person_id",
+              "started_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_sessions_person_start` ON `${TABLE_NAME}` (`primary_person_id`, `started_at`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "conversations",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "conversation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "weight_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `person_id` TEXT NOT NULL, `conversation_id` TEXT NOT NULL, `session_id` TEXT, `actor_side` TEXT NOT NULL, `event_type` TEXT NOT NULL, `dimension` TEXT NOT NULL, `base_delta` REAL NOT NULL, `repeat_multiplier` REAL NOT NULL, `confidence_multiplier` REAL NOT NULL, `cap_multiplier` REAL NOT NULL, `effective_delta` REAL NOT NULL, `event_time` INTEGER NOT NULL, `repeat_group` TEXT, `source_message_ids_json` TEXT, `metadata_json` TEXT, `created_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "actorSide",
+            "columnName": "actor_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "event_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dimension",
+            "columnName": "dimension",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseDelta",
+            "columnName": "base_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repeatMultiplier",
+            "columnName": "repeat_multiplier",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confidenceMultiplier",
+            "columnName": "confidence_multiplier",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capMultiplier",
+            "columnName": "cap_multiplier",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "effectiveDelta",
+            "columnName": "effective_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventTime",
+            "columnName": "event_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repeatGroup",
+            "columnName": "repeat_group",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sourceMessageIdsJson",
+            "columnName": "source_message_ids_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadataJson",
+            "columnName": "metadata_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_weight_events_person_time",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_weight_events_person_time` ON `${TABLE_NAME}` (`person_id`, `event_time`)"
+          },
+          {
+            "name": "idx_weight_events_person_dimension",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "actor_side",
+              "dimension",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_weight_events_person_dimension` ON `${TABLE_NAME}` (`person_id`, `actor_side`, `dimension`, `event_time`)"
+          },
+          {
+            "name": "idx_weight_events_session",
+            "unique": false,
+            "columnNames": [
+              "session_id",
+              "event_type"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_weight_events_session` ON `${TABLE_NAME}` (`session_id`, `event_type`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "weight_state",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `actor_side` TEXT NOT NULL, `dimension` TEXT NOT NULL, `recent_raw` REAL NOT NULL, `base_raw` REAL NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`person_id`, `actor_side`, `dimension`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "actorSide",
+            "columnName": "actor_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dimension",
+            "columnName": "dimension",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recentRaw",
+            "columnName": "recent_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseRaw",
+            "columnName": "base_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id",
+            "actor_side",
+            "dimension"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "daily_metrics",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `local_date` TEXT NOT NULL, `incoming_messages` INTEGER NOT NULL, `outgoing_messages` INTEGER NOT NULL, `incoming_chars` INTEGER NOT NULL, `outgoing_chars` INTEGER NOT NULL, `session_count` INTEGER NOT NULL, `self_started_sessions` INTEGER NOT NULL, `other_started_sessions` INTEGER NOT NULL, `total_turns` INTEGER NOT NULL, `self_avg_reply_ms` INTEGER, `other_avg_reply_ms` INTEGER, `active_minutes` INTEGER NOT NULL, PRIMARY KEY(`person_id`, `local_date`))",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "local_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incomingMessages",
+            "columnName": "incoming_messages",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outgoingMessages",
+            "columnName": "outgoing_messages",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incomingChars",
+            "columnName": "incoming_chars",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "outgoingChars",
+            "columnName": "outgoing_chars",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionCount",
+            "columnName": "session_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selfStartedSessions",
+            "columnName": "self_started_sessions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "otherStartedSessions",
+            "columnName": "other_started_sessions",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalTurns",
+            "columnName": "total_turns",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selfAvgReplyMs",
+            "columnName": "self_avg_reply_ms",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "otherAvgReplyMs",
+            "columnName": "other_avg_reply_ms",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "activeMinutes",
+            "columnName": "active_minutes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id",
+            "local_date"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "daily_weight_snapshots",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `local_date` TEXT NOT NULL, `actor_side` TEXT NOT NULL, `initiative_score` REAL NOT NULL, `response_score` REAL NOT NULL, `effort_score` REAL NOT NULL, `continuity_score` REAL NOT NULL, `frequency_score` REAL NOT NULL, `overall_score` REAL NOT NULL, `recent_raw_total` REAL NOT NULL, `base_raw_total` REAL NOT NULL, `confidence_score` REAL NOT NULL, `calculated_at` INTEGER NOT NULL, PRIMARY KEY(`person_id`, `local_date`, `actor_side`))",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "local_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "actorSide",
+            "columnName": "actor_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "initiativeScore",
+            "columnName": "initiative_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "responseScore",
+            "columnName": "response_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "effortScore",
+            "columnName": "effort_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "continuityScore",
+            "columnName": "continuity_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "frequencyScore",
+            "columnName": "frequency_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "overallScore",
+            "columnName": "overall_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recentRawTotal",
+            "columnName": "recent_raw_total",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseRawTotal",
+            "columnName": "base_raw_total",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confidenceScore",
+            "columnName": "confidence_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "calculatedAt",
+            "columnName": "calculated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id",
+            "local_date",
+            "actor_side"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "relationship_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `relationship_type` TEXT NOT NULL, `custom_label` TEXT, `expression_stage` INTEGER NOT NULL, `highest_expression_stage` INTEGER NOT NULL, `expression_raw` REAL NOT NULL, `expression_heat_raw` REAL NOT NULL, `heat_updated_at` INTEGER NOT NULL, `manually_confirmed_stage` INTEGER, `last_relationship_event_at` INTEGER, `engine_version` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`person_id`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relationshipType",
+            "columnName": "relationship_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "customLabel",
+            "columnName": "custom_label",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "expressionStage",
+            "columnName": "expression_stage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "highestExpressionStage",
+            "columnName": "highest_expression_stage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionRaw",
+            "columnName": "expression_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionHeatRaw",
+            "columnName": "expression_heat_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "heatUpdatedAt",
+            "columnName": "heat_updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "manuallyConfirmedStage",
+            "columnName": "manually_confirmed_stage",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastRelationshipEventAt",
+            "columnName": "last_relationship_event_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "engineVersion",
+            "columnName": "engine_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "relationship_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `person_id` TEXT NOT NULL, `conversation_id` TEXT, `session_id` TEXT, `actor_side` TEXT NOT NULL, `event_type` TEXT NOT NULL, `event_category` TEXT NOT NULL, `source` TEXT NOT NULL, `base_progress_delta` REAL NOT NULL, `base_heat_delta` REAL NOT NULL, `repeat_multiplier` REAL NOT NULL, `confidence` REAL NOT NULL, `effective_progress_delta` REAL NOT NULL, `effective_heat_delta` REAL NOT NULL, `event_time` INTEGER NOT NULL, `source_message_ids_json` TEXT, `metadata_json` TEXT, `dedupe_key` TEXT, `engine_version` INTEGER NOT NULL, `created_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`conversation_id`) REFERENCES `conversations`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`session_id`) REFERENCES `chat_sessions`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "actorSide",
+            "columnName": "actor_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "event_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventCategory",
+            "columnName": "event_category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseProgressDelta",
+            "columnName": "base_progress_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseHeatDelta",
+            "columnName": "base_heat_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "repeatMultiplier",
+            "columnName": "repeat_multiplier",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confidence",
+            "columnName": "confidence",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "effectiveProgressDelta",
+            "columnName": "effective_progress_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "effectiveHeatDelta",
+            "columnName": "effective_heat_delta",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventTime",
+            "columnName": "event_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceMessageIdsJson",
+            "columnName": "source_message_ids_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadataJson",
+            "columnName": "metadata_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dedupeKey",
+            "columnName": "dedupe_key",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "engineVersion",
+            "columnName": "engine_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_relationship_events_person_time",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_events_person_time` ON `${TABLE_NAME}` (`person_id`, `event_time`)"
+          },
+          {
+            "name": "idx_relationship_events_person_type",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "event_type",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_events_person_type` ON `${TABLE_NAME}` (`person_id`, `event_type`, `event_time`)"
+          },
+          {
+            "name": "idx_relationship_events_category",
+            "unique": false,
+            "columnNames": [
+              "person_id",
+              "event_category",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_events_category` ON `${TABLE_NAME}` (`person_id`, `event_category`, `event_time`)"
+          },
+          {
+            "name": "idx_relationship_events_session",
+            "unique": false,
+            "columnNames": [
+              "session_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_events_session` ON `${TABLE_NAME}` (`session_id`)"
+          },
+          {
+            "name": "idx_relationship_events_dedupe",
+            "unique": true,
+            "columnNames": [
+              "person_id",
+              "dedupe_key"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `idx_relationship_events_dedupe` ON `${TABLE_NAME}` (`person_id`, `dedupe_key`)"
+          },
+          {
+            "name": "idx_relationship_events_conversation_room",
+            "unique": false,
+            "columnNames": [
+              "conversation_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_events_conversation_room` ON `${TABLE_NAME}` (`conversation_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "conversations",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "conversation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "chat_sessions",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "session_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "relationship_daily_snapshot",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `local_date` TEXT NOT NULL, `relationship_type` TEXT NOT NULL, `expression_stage` INTEGER NOT NULL, `highest_expression_stage` INTEGER NOT NULL, `expression_raw` REAL NOT NULL, `expression_progress_score` REAL NOT NULL, `expression_heat_raw` REAL NOT NULL, `expression_heat_score` REAL NOT NULL, `familiarity_event_count` INTEGER NOT NULL, `approach_event_count` INTEGER NOT NULL, `care_event_count` INTEGER NOT NULL, `affection_event_count` INTEGER NOT NULL, `direct_expression_count` INTEGER NOT NULL, `retreat_event_count` INTEGER NOT NULL, `valid_session_count` INTEGER NOT NULL, `calculated_at` INTEGER NOT NULL, `engine_version` INTEGER NOT NULL, PRIMARY KEY(`person_id`, `local_date`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "local_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relationshipType",
+            "columnName": "relationship_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionStage",
+            "columnName": "expression_stage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "highestExpressionStage",
+            "columnName": "highest_expression_stage",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionRaw",
+            "columnName": "expression_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionProgressScore",
+            "columnName": "expression_progress_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionHeatRaw",
+            "columnName": "expression_heat_raw",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expressionHeatScore",
+            "columnName": "expression_heat_score",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familiarityEventCount",
+            "columnName": "familiarity_event_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "approachEventCount",
+            "columnName": "approach_event_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "careEventCount",
+            "columnName": "care_event_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "affectionEventCount",
+            "columnName": "affection_event_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "directExpressionCount",
+            "columnName": "direct_expression_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retreatEventCount",
+            "columnName": "retreat_event_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "validSessionCount",
+            "columnName": "valid_session_count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "calculatedAt",
+            "columnName": "calculated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "engineVersion",
+            "columnName": "engine_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id",
+            "local_date"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "relationship_event_candidates",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `person_id` TEXT NOT NULL, `conversation_id` TEXT NOT NULL, `session_id` TEXT, `actor_side` TEXT NOT NULL, `event_type` TEXT NOT NULL, `source` TEXT NOT NULL, `confidence` REAL NOT NULL, `confirmation_policy` TEXT NOT NULL, `status` TEXT NOT NULL, `event_time` INTEGER NOT NULL, `source_message_ids_json` TEXT, `evidence_text` TEXT, `reason_code` TEXT, `metadata_json` TEXT, `dedupe_key` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `reviewed_at` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "actorSide",
+            "columnName": "actor_side",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "event_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confidence",
+            "columnName": "confidence",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "confirmationPolicy",
+            "columnName": "confirmation_policy",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventTime",
+            "columnName": "event_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceMessageIdsJson",
+            "columnName": "source_message_ids_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "evidenceText",
+            "columnName": "evidence_text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "reasonCode",
+            "columnName": "reason_code",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "metadataJson",
+            "columnName": "metadata_json",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dedupeKey",
+            "columnName": "dedupe_key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reviewedAt",
+            "columnName": "reviewed_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "idx_relationship_candidates_dedupe",
+            "unique": true,
+            "columnNames": [
+              "person_id",
+              "dedupe_key"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `idx_relationship_candidates_dedupe` ON `${TABLE_NAME}` (`person_id`, `dedupe_key`)"
+          },
+          {
+            "name": "idx_relationship_candidates_pending",
+            "unique": false,
+            "columnNames": [
+              "status",
+              "event_time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `idx_relationship_candidates_pending` ON `${TABLE_NAME}` (`status`, `event_time`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "person_special_nicknames",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`person_id` TEXT NOT NULL, `nickname` TEXT NOT NULL, `created_at` INTEGER NOT NULL, PRIMARY KEY(`person_id`, `nickname`), FOREIGN KEY(`person_id`) REFERENCES `persons`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "personId",
+            "columnName": "person_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nickname",
+            "columnName": "nickname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "person_id",
+            "nickname"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "persons",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "person_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "algorithm_meta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`key` TEXT NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`key`))",
+        "fields": [
+          {
+            "fieldPath": "key",
+            "columnName": "key",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "key"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "capture_cursors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`conversation_id` TEXT NOT NULL, `screen_json` TEXT NOT NULL, `next_sequence` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`conversation_id`))",
+        "fields": [
+          {
+            "fieldPath": "conversationId",
+            "columnName": "conversation_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "screenJson",
+            "columnName": "screen_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextSequence",
+            "columnName": "next_sequence",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "conversation_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e13f1b31fe898e531df3e1ee74b52d9d')"
+    ]
+  }
+}

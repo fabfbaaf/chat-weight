@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ChatWeight</string>
+    <string name="a11y_desc_disguised">读取当前屏幕中你有权查看的 QQ、微信聊天内容，保存在应用私有数据库中做本地关系分析。开启 AI 回复后才会请求你配置的模型接口。不会自动发送消息。</string>
+</resources>
